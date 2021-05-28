@@ -1,5 +1,11 @@
 ---
 title: Python 异步IO编程
+date: 2021/5/28 9:51:54
+comments: true
+categories:
+- Python
+tags:
+- asyncio
 ---
 
 ## 1.协程
