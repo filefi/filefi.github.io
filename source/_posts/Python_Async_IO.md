@@ -35,7 +35,7 @@ func2()
 
 - greenlet，是一个第三方模块，用于实现协程代码（Gevent 协程就是基于 greenlet 实现）
 - `yield`，生成器，借助生成器的特点也可以实现协程代码。
-- `asyncio`，在Python3.4中引入的模块用于编写协程代码。
+- `asyncio`，在 Python 3.4 中引入的模块用于编写协程代码。
 - `async` & `awiat`，在 Python 3.5 中引入的两个关键字，结合`asyncio`模块可以更方便的编写协程代码。
 
 ### 1.1 greenlet
@@ -61,11 +61,11 @@ gr2 = greenlet(func2)
 gr1.switch() # 第1步：去执行 func1 函数
 ```
 
-注意：switch中也可以传递参数用于在切换执行时相互传递值。
+注意：switch 中也可以传递参数用于在切换执行时相互传递值。
 
 ### 1.2 yield
 
-基于Python的生成器的yield和yield form关键字实现协程代码。
+基于 Python 的生成器的`yield`和`yield form`关键字实现协程代码。
 
 ```python
 def func1():
@@ -82,11 +82,11 @@ for item in f1:
     print(item)
 ```
 
-注意：yield form关键字是在Python3.3中引入的。
+注意：`yield form`关键字是在 Python 3.3 中引入的。
 
 ### 1.3 asyncio
 
-在Python3.4之前官方未提供协程的类库，一般大家都是使用greenlet等其他来实现。在Python3.4发布后官方正式支持协程，即：asyncio模块。
+在 Python 3.4 之前官方未提供协程的类库，一般大家都是使用 greenlet 等其他来实现。在 Python 3.4 发布后官方正式支持协程，即：`asyncio`模块。
 
 ```python
 import asyncio
@@ -116,9 +116,9 @@ loop.run_until_complete(asyncio.wait(tasks))
 
 ### 1.4 `async` & `await`
 
-`async` & `await` 关键字在Python3.5版本中正式引入，基于他编写的协程代码其实就是 上一示例 的加强版，让代码可以更加简便。
+`async` & `await` 关键字在 Python 3.5 版本中正式引入，基于他编写的协程代码其实就是 上一示例 的加强版，让代码可以更加简便。
 
-Python3.8之后 `@asyncio.coroutine` 装饰器就会被移除，推荐使用 `async` & `awit` 关键字实现协程代码。
+Python 3.8 之后 `@asyncio.coroutine` 装饰器就会被移除，推荐使用 `async` & `awit` 关键字实现协程代码。
 
 ```python
 import asyncio
