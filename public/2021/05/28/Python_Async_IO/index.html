@@ -14,7 +14,7 @@
 <meta property="og:description" content="1.协程想学asyncio，得先了解协程，协程是根本呀！ 协程（Coroutine），也可以被称为微线程，是一种用户态内的上下文切换技术。简而言之，其实就是通过一个线程实现代码块相互切换执行。例如： 123456789101112def func1():    print(1)    ...    print(2)def func2():    print(3)    ...    print(4">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-05-28T01:51:54.000Z">
-<meta property="article:modified_time" content="2021-05-28T01:54:22.339Z">
+<meta property="article:modified_time" content="2021-05-28T03:45:40.474Z">
 <meta property="article:author" content="filefi">
 <meta property="article:tag" content="asyncio">
 <meta name="twitter:card" content="summary">
@@ -109,23 +109,23 @@
 <ul>
 <li>greenlet，是一个第三方模块，用于实现协程代码（Gevent 协程就是基于 greenlet 实现）</li>
 <li><code>yield</code>，生成器，借助生成器的特点也可以实现协程代码。</li>
-<li><code>asyncio</code>，在Python3.4中引入的模块用于编写协程代码。</li>
+<li><code>asyncio</code>，在 Python 3.4 中引入的模块用于编写协程代码。</li>
 <li><code>async</code> &amp; <code>awiat</code>，在 Python 3.5 中引入的两个关键字，结合<code>asyncio</code>模块可以更方便的编写协程代码。</li>
 </ul>
 <h3 id="1-1-greenlet"><a href="#1-1-greenlet" class="headerlink" title="1.1 greenlet"></a>1.1 greenlet</h3><p>greentlet 是一个第三方模块，需要提前安装 <code>pip3 install greenlet</code>才能使用。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> greenlet <span class="keyword">import</span> greenlet</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">func1</span>():</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="number">1</span>)        <span class="comment"># 第1步：输出 1</span></span><br><span class="line">    gr2.switch()    <span class="comment"># 第3步：切换到 func2 函数</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="number">2</span>)        <span class="comment"># 第6步：输出 2</span></span><br><span class="line">    gr2.switch()    <span class="comment"># 第7步：切换到 func2 函数，从上一次执行的位置继续向后执行</span></span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">func2</span>():</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="number">3</span>)        <span class="comment"># 第4步：输出 3</span></span><br><span class="line">    gr1.switch()    <span class="comment"># 第5步：切换到 func1 函数，从上一次执行的位置继续向后执行</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="number">4</span>)        <span class="comment"># 第8步：输出 4</span></span><br><span class="line">    </span><br><span class="line">gr1 = greenlet(func1)</span><br><span class="line">gr2 = greenlet(func2)</span><br><span class="line">gr1.switch() <span class="comment"># 第1步：去执行 func1 函数</span></span><br></pre></td></tr></table></figure>
 
-<p>注意：switch中也可以传递参数用于在切换执行时相互传递值。</p>
-<h3 id="1-2-yield"><a href="#1-2-yield" class="headerlink" title="1.2 yield"></a>1.2 yield</h3><p>基于Python的生成器的yield和yield form关键字实现协程代码。</p>
+<p>注意：switch 中也可以传递参数用于在切换执行时相互传递值。</p>
+<h3 id="1-2-yield"><a href="#1-2-yield" class="headerlink" title="1.2 yield"></a>1.2 yield</h3><p>基于 Python 的生成器的<code>yield</code>和<code>yield form</code>关键字实现协程代码。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">func1</span>():</span></span><br><span class="line">    <span class="keyword">yield</span> <span class="number">1</span></span><br><span class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> func2()</span><br><span class="line">    <span class="keyword">yield</span> <span class="number">2</span></span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">func2</span>():</span></span><br><span class="line">    <span class="keyword">yield</span> <span class="number">3</span></span><br><span class="line">    <span class="keyword">yield</span> <span class="number">4</span></span><br><span class="line">    </span><br><span class="line">f1 = func1()</span><br><span class="line"><span class="keyword">for</span> item <span class="keyword">in</span> f1:</span><br><span class="line">    <span class="built_in">print</span>(item)</span><br></pre></td></tr></table></figure>
 
-<p>注意：yield form关键字是在Python3.3中引入的。</p>
-<h3 id="1-3-asyncio"><a href="#1-3-asyncio" class="headerlink" title="1.3 asyncio"></a>1.3 asyncio</h3><p>在Python3.4之前官方未提供协程的类库，一般大家都是使用greenlet等其他来实现。在Python3.4发布后官方正式支持协程，即：asyncio模块。</p>
+<p>注意：<code>yield form</code>关键字是在 Python 3.3 中引入的。</p>
+<h3 id="1-3-asyncio"><a href="#1-3-asyncio" class="headerlink" title="1.3 asyncio"></a>1.3 asyncio</h3><p>在 Python 3.4 之前官方未提供协程的类库，一般大家都是使用 greenlet 等其他来实现。在 Python 3.4 发布后官方正式支持协程，即：<code>asyncio</code>模块。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> asyncio</span><br><span class="line"></span><br><span class="line"><span class="meta">@asyncio.coroutine</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">func1</span>():</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> asyncio.sleep(<span class="number">2</span>)  <span class="comment"># 遇到IO耗时操作，自动化切换到tasks中的其他任务</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="number">2</span>)</span><br><span class="line">    </span><br><span class="line"><span class="meta">@asyncio.coroutine</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">func2</span>():</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="number">3</span>)</span><br><span class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> asyncio.sleep(<span class="number">2</span>) <span class="comment"># 遇到IO耗时操作，自动化切换到tasks中的其他任务</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="number">4</span>)</span><br><span class="line">    </span><br><span class="line">tasks = [</span><br><span class="line">    asyncio.ensure_future( func1() ),</span><br><span class="line">    asyncio.ensure_future( func2() )</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">loop = asyncio.get_event_loop()</span><br><span class="line">loop.run_until_complete(asyncio.wait(tasks))</span><br></pre></td></tr></table></figure>
 
 <p>注意：基于<code>asyncio</code>模块实现的协程比之前的要更厉害，因为他的内部还集成了遇到IO耗时操作自动切花的功能。</p>
-<h3 id="1-4-async-amp-await"><a href="#1-4-async-amp-await" class="headerlink" title="1.4 async &amp; await"></a>1.4 <code>async</code> &amp; <code>await</code></h3><p><code>async</code> &amp; <code>await</code> 关键字在Python3.5版本中正式引入，基于他编写的协程代码其实就是 上一示例 的加强版，让代码可以更加简便。</p>
-<p>Python3.8之后 <code>@asyncio.coroutine</code> 装饰器就会被移除，推荐使用 <code>async</code> &amp; <code>awit</code> 关键字实现协程代码。</p>
+<h3 id="1-4-async-amp-await"><a href="#1-4-async-amp-await" class="headerlink" title="1.4 async &amp; await"></a>1.4 <code>async</code> &amp; <code>await</code></h3><p><code>async</code> &amp; <code>await</code> 关键字在 Python 3.5 版本中正式引入，基于他编写的协程代码其实就是 上一示例 的加强版，让代码可以更加简便。</p>
+<p>Python 3.8 之后 <code>@asyncio.coroutine</code> 装饰器就会被移除，推荐使用 <code>async</code> &amp; <code>awit</code> 关键字实现协程代码。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> asyncio</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">def</span> <span class="title">func1</span>():</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">await</span> asyncio.sleep(<span class="number">2</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="number">2</span>)</span><br><span class="line">    </span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">def</span> <span class="title">func2</span>():</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="number">3</span>)</span><br><span class="line">    <span class="keyword">await</span> asyncio.sleep(<span class="number">2</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="number">4</span>)</span><br><span class="line">    </span><br><span class="line">tasks = [</span><br><span class="line">    asyncio.ensure_future(func1()),</span><br><span class="line">    asyncio.ensure_future(func2())</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">loop = asyncio.get_event_loop()</span><br><span class="line">loop.run_until_complete(asyncio.wait(tasks))</span><br></pre></td></tr></table></figure>
 
 <h3 id="1-5-小结"><a href="#1-5-小结" class="headerlink" title="1.5 小结"></a>1.5 小结</h3><p>关于协程有多种实现方式，目前主流使用是Python官方推荐的 <code>asyncio</code> 模块和 <code>async</code>&amp;<code>await</code>关键字的方式，例如：在tonado、sanic、fastapi、django3 中均已支持。</p>
@@ -308,7 +308,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://filefi.github.io/2021/05/28/Python_Async_IO/" data-id="ckp7obgma0001onvfd0dqcevl" data-title="Python 异步IO编程" class="article-share-link">分享</a>
+      <a data-url="https://filefi.github.io/2021/05/28/Python_Async_IO/" data-id="ckp7s97dc0001exvf8ioeeonp" data-title="Python 异步IO编程" class="article-share-link">分享</a>
       
       
       
@@ -320,11 +320,15 @@
     
 <nav id="article-nav">
   
-  
-    <a href="/2021/05/28/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">后一篇</strong>
-      <div class="article-nav-title">Hello World</div>
+    <a href="/2021/05/28/hello-world/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">前一篇</strong>
+      <div class="article-nav-title">
+        
+          Hello World
+        
+      </div>
     </a>
+  
   
 </nav>
 
@@ -382,11 +386,11 @@
       <ul>
         
           <li>
-            <a href="/2021/05/28/Python_Async_IO/">Python 异步IO编程</a>
+            <a href="/2021/05/28/hello-world/">Hello World</a>
           </li>
         
           <li>
-            <a href="/2021/05/28/hello-world/">Hello World</a>
+            <a href="/2021/05/28/Python_Async_IO/">Python 异步IO编程</a>
           </li>
         
       </ul>
